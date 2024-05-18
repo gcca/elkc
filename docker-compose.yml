@@ -1,0 +1,28 @@
+services:
+  app:
+    image: elkc-app
+    container_name: elkc-app
+    ports:
+      - "8000:80"
+  logstash:
+    image: logstash:8.13.4
+    container_name: logstash
+    depends_on: ["elasticsearch"]
+    environment:
+      - xpack.monitoring.enabled=true
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  elasticsearch:
+    image: elasticsearch:8.13.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+  kibana:
+    image: kibana:8.13.4
+    container_name: kibana
+    depends_on: ["elasticsearch"]
+    ports:
+      - "5601:5601"
